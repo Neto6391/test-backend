@@ -1,8 +1,9 @@
+import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsNotEmpty } from "class-validator";
 
 enum Gender {
-    M = 'male',
-    F = 'female',
+    male = 'M',
+    female = 'F',
 }
 
 export class PersonDto {
@@ -17,6 +18,7 @@ export class PersonDto {
 
     @IsNotEmpty()
     @IsDate()
+    @Type(() => Date)
     readonly birthday: Date;
 
 }
