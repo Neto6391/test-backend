@@ -4,7 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { ChangePasswordDto } from './dto';
-import sequelize from 'sequelize';
+import sequelize, { Sequelize } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -29,16 +29,19 @@ export class UserService {
         return await this.authService.login(user);
     }
 
-    async read(page?: number, limit?: Number, email?: string) {
-        const filter = { deletedAt: null };
+    async read(page?: number, limit?: Number, email?: string, deletedUsers?: Boolean) {
+        
         limit = limit || 2;
         page = page || 1;
+        
+        const filter = { deletedAt: !deletedUsers ? null : new Date().toString()  };
+        console.log(filter)
         const offset = Number(limit) * (Number(page) - 1);
         
         if (email) {
             Object.assign(filter, { email: {[sequelize.Op.like]:'%' + email + '%' } });
         }
-        const {rows, count} = await this.userRepository.findAndCountAll({ where: filter, order: ['id'], offset, limit: Number(limit)});
+        const {rows, count} = await this.userRepository.findAndCountAll({ where: filter, attributes: { exclude: ['password', 'deletedAt'] }, order: ['id'], offset, limit: Number(limit)});
         
         if (rows.length > 0) {
             const totalPages = Math.ceil(count / Number(limit));
