@@ -4,6 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { ChangePasswordDto } from './dto';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -26,6 +27,32 @@ export class UserService {
 
     async authenticate(user) {
         return await this.authService.login(user);
+    }
+
+    async read(page?: number, limit?: Number, email?: string) {
+        const filter = { deletedAt: null };
+        limit = limit || 2;
+        page = page || 1;
+        const offset = Number(limit) * (Number(page) - 1);
+        
+        if (email) {
+            Object.assign(filter, { email: {[sequelize.Op.like]:'%' + email + '%' } });
+        }
+        const {rows, count} = await this.userRepository.findAndCountAll({ where: filter, order: ['id'], offset, limit: Number(limit)});
+        
+        if (rows.length > 0) {
+            const totalPages = Math.ceil(count / Number(limit));
+            return {
+                totalItems: count,
+                rows,
+                actualPage: Number(page),
+                totalPages
+            };
+        } else {
+            return { message: "There are not users available!" }
+        }
+
+        
     }
 
     async create(user) {
