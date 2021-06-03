@@ -3,6 +3,7 @@ import { USER_REPOSITORY } from 'src/core/constants';
 import { AuthService } from '../auth/auth.service';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { ChangePasswordDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,11 @@ export class UserService {
         @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
     ) {}
 
-    async findOneByEmail(email: string): Promise<User> {
+    async findOneByEmail(email: string, filterOption?: object): Promise<User> {
+        if (filterOption) {
+            Object.assign(filterOption, { email });
+            return await this.userRepository.findOne<User>({ where: filterOption, paranoid: false });
+        }
         return await this.userRepository.findOne<User>({ where: { email }, paranoid: false });
     }
 
@@ -32,6 +37,16 @@ export class UserService {
         const token = await this.authService.generateToken(result);
 
         return { user: result, token };
+    }
+
+    async changePassword(data: ChangePasswordDto, idParam: number, userIdAuth: number) {
+        if (Number(idParam) === userIdAuth) {
+            const newHash = await this.hashPassword(data.password);
+            const [numberOfAffectedRows] = await this.userRepository.update({password: newHash}, { where: { id: idParam }, returning: true });
+            return numberOfAffectedRows;
+        } else {
+            return Promise.resolve(null);
+        }
     }
 
     async softDelete(idParam, userIdAuth, isUserAdminAuth) {
