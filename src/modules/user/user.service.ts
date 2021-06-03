@@ -12,7 +12,7 @@ export class UserService {
     ) {}
 
     async findOneByEmail(email: string): Promise<User> {
-        return await this.userRepository.findOne<User>({ where: { email } });
+        return await this.userRepository.findOne<User>({ where: { email }, paranoid: false });
     }
 
     async findOneById(id: number): Promise<User> {
@@ -32,6 +32,16 @@ export class UserService {
         const token = await this.authService.generateToken(result);
 
         return { user: result, token };
+    }
+
+    async softDelete(idParam, userIdAuth, isUserAdminAuth) {
+        if (isUserAdminAuth) {
+            return await this.userRepository.destroy({ where: { id: idParam } });
+        } else if(idParam === userIdAuth) {
+            return await this.userRepository.destroy({ where: { id: idParam } });
+        } else {
+            return idParam !== userIdAuth ? Promise.resolve(null) : Promise.resolve(0);
+        }
     }
 
     private async hashPassword(password) {
