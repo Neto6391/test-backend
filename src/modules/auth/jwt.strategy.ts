@@ -18,10 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: any) {
         const user = await this.userService.findOneById(payload.id)
-        
+       
         if (!user) {
             throw new UnauthorizedException('You are not authorized to perfom the operation');
         }
-        return payload;
+        const { password, ...dataValues } = user['dataValues'];
+        return dataValues;
     }
 }
