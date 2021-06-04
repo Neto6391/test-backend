@@ -42,6 +42,11 @@ export class PersonService {
 
     }
 
+    async update(body, userId) {
+        const [numberOfAffectedRows] = await this.personRepository.update({...body, userId}, { where: { userId }, returning: true });
+            return numberOfAffectedRows;
+    }
+
     async findOneByUserId(userId: number) {
        return await this.personRepository.findOne({ where: { userId } });
     }

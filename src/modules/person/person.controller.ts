@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Request, InternalServerErrorException, BadRequestException, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request, InternalServerErrorException, BadRequestException, Get, Put, NotFoundException } from '@nestjs/common';
 import { DoesPersonExist } from 'src/core/guards/does-person-exists.guard';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { PersonDto } from './dto/person.dto';
@@ -51,6 +51,19 @@ export class PersonController {
         }
 
         return await this.personService.read(page, limit, name);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('update')
+    async update(@Body() body: PersonDto, @Request() req) {
+        const { id: userId } = req.user;
+        const numberOfAffectedRows = await this.personService.update(body, userId);
+
+        if (numberOfAffectedRows === 0) {
+            throw new NotFoundException('This Person doesn\'t exist');
+        }
+
+        return { message: "Person was successfully updated!" };
     }
 
 }
