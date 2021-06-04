@@ -66,6 +66,56 @@ export class PersonController {
         return { message: "Person was successfully updated!" };
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('read-by-location')
+    async readByLocation(@Request() req) {
+        let page;
+        let limit;
+        let city;
+        let state;
+    
+        const typeofVariableForbiddenForString = ["string","boolean", "object", "undefined"];
+
+        if (req.query.page && typeofVariableForbiddenForString.includes(typeof req.query.page)) {
+            if (req.query.page.length > 1) throw new BadRequestException('Bad Params in Body of Request');            
+        }
+
+        if (req.query.limit && typeofVariableForbiddenForString.includes(typeof req.query.limit)) {
+            if (req.query.limit.length > 1) throw new BadRequestException('Bad Params in Body of Request'); 
+        }
+
+        if (req.query.city && typeofVariableForbiddenForString.includes(typeof req.query.city)) {
+            if (req.query.city <= 1)  throw new BadRequestException('Bad Params in Body of Request'); 
+        }
+
+        if (req.query.state && typeofVariableForbiddenForString.includes(typeof req.query.state)) {
+            if (req.query.state <= 1)  throw new BadRequestException('Bad Params in Body of Request'); 
+        }
+
+        if (!req.query.city && !req.query.state) {
+            throw new BadRequestException('Bad Params in Body of Request'); 
+        }
+
+
+        if (req.query.page) {
+            page = req.query.page;
+        }
+        if (req.query.limit) {
+            limit = req.query.limit;
+        }
+        if (req.query.city) {
+            city = req.query.city;
+        }
+
+        if (req.query.state) {
+            state = req.query.state;
+        }
+
+        const { id: userId } = req.user;
+
+        return await this.personService.readByLocation(page, limit, city, state, userId);
+    }
+
 }
 
 
