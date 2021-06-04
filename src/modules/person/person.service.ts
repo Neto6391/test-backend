@@ -1,13 +1,15 @@
-import { Inject, Injectable, Post, UseGuards } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Post, UseGuards } from '@nestjs/common';
 import sequelize from 'sequelize';
 import { PERSON_REPOSITORY } from 'src/core/constants';
+import { AddressService } from '../address/address.service';
 import { Person } from './person.entity';
 
 @Injectable()
 export class PersonService {
     constructor(
-        @Inject(PERSON_REPOSITORY) private readonly personRepository: typeof Person
-    ) {}
+        @Inject(PERSON_REPOSITORY) private readonly personRepository: typeof Person,
+        @Inject(forwardRef(() => AddressService)) private readonly addressService: AddressService,
+        ) {}
 
     async create(body, userId): Promise<Person> { 
         return await this.personRepository.create({...body, userId})
@@ -40,6 +42,10 @@ export class PersonService {
             return { message: "There are not persons available!" }
         }
 
+    }
+
+    async readByLocation(page, limit, city, state, userId) {
+        return await this.addressService.readByLocation(page, limit, city, state, userId);
     }
 
     async update(body, userId) {
