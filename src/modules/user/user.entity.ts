@@ -1,4 +1,5 @@
-import { AutoIncrement, Column, DataType, Default, HasOne, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, Default, HasMany, HasOne, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { Address } from "../address/address.entity";
 import { Person } from "../person/person.entity";
 
 @Table({
@@ -38,4 +39,7 @@ export class User extends Model {
 
     @HasOne(() => Person)
     person: Person
+
+    @HasMany(() => Address)
+    address: Address
 }
