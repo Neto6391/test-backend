@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { ChangePasswordDto } from './dto';
 import sequelize, { Sequelize } from 'sequelize';
+import { Person } from '../person/person.entity';
 
 @Injectable()
 export class UserService {
@@ -22,20 +23,22 @@ export class UserService {
     }
 
     async findOneById(id: number): Promise<User> {
-        return await this.userRepository.findByPk<User>(id);
+        return await this.userRepository.findByPk<User>(id, { 
+            include: [
+                { model: Person, attributes: { exclude: ['name', 'gender', 'birthday', 'createdAt', 'updatedAt', 'userId'] } }
+            ], 
+        paranoid: false });
     }
 
     async authenticate(user) {
         return await this.authService.login(user);
     }
 
-    async read(page?: number, limit?: Number, email?: string, deletedUsers?: Boolean) {
-        
-        limit = limit || 2;
+    async read(page?: number, limit?: Number, email?: string) {
+        limit = limit || 10;
         page = page || 1;
         
-        const filter = { deletedAt: !deletedUsers ? null : new Date().toString()  };
-        console.log(filter)
+        const filter = { deletedAt: null };
         const offset = Number(limit) * (Number(page) - 1);
         
         if (email) {
@@ -54,8 +57,6 @@ export class UserService {
         } else {
             return { message: "There are not users available!" }
         }
-
-        
     }
 
     async create(user) {
@@ -69,23 +70,19 @@ export class UserService {
         return { user: result, token };
     }
 
-    async changePassword(data: ChangePasswordDto, idParam: number, userIdAuth: number) {
-        if (Number(idParam) === userIdAuth) {
-            const newHash = await this.hashPassword(data.password);
-            const [numberOfAffectedRows] = await this.userRepository.update({password: newHash}, { where: { id: idParam }, returning: true });
-            return numberOfAffectedRows;
-        } else {
-            return Promise.resolve(null);
-        }
+    async changePassword(data: ChangePasswordDto, userIdAuth: number) {
+        const newHash = await this.hashPassword(data.password);
+        const [numberOfAffectedRows] = await this.userRepository.update({password: newHash}, { where: { id: userIdAuth }, returning: true });
+        return numberOfAffectedRows;
     }
 
     async softDelete(idParam, userIdAuth, isUserAdminAuth) {
         if (isUserAdminAuth) {
             return await this.userRepository.destroy({ where: { id: idParam } });
-        } else if(idParam === userIdAuth) {
+        } else if(Number(idParam) === Number(userIdAuth)) {
             return await this.userRepository.destroy({ where: { id: idParam } });
         } else {
-            return idParam !== userIdAuth ? Promise.resolve(null) : Promise.resolve(0);
+            return Number(idParam) !== Number(userIdAuth) ? Promise.resolve(null) : Promise.resolve(0);
         }
     }
 

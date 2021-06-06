@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, Post, UseGuards } from '@nestjs/common'
 import sequelize from 'sequelize';
 import { PERSON_REPOSITORY } from 'src/core/constants';
 import { AddressService } from '../address/address.service';
+import { User } from '../user/user.entity';
 import { Person } from './person.entity';
 
 @Injectable()
@@ -16,19 +17,29 @@ export class PersonService {
     }
 
     async read(page?: number, limit?: Number, name?: string) {
-
-        limit = limit || 2;
+        limit = limit || 10;
         page = page || 1;
 
         const filter = {};
-        console.log(filter)
         const offset = Number(limit) * (Number(page) - 1);
 
         if (name) {
             Object.assign(filter, { name: {[sequelize.Op.like]:'%' + name + '%' } });
         }
 
-        const {rows, count} = await this.personRepository.findAndCountAll({ where: filter, attributes: { exclude: ['password', 'deletedAt'] }, order: ['id'], offset, limit: Number(limit)});
+        const {rows, count} = await this.personRepository.findAndCountAll({ 
+            where: filter,  
+            include: [{ 
+                model: User, 
+                attributes: { 
+                    exclude: ['id','password', 'deletedAt', 'createdAt', 'updatedAt', 'isAdmin'] 
+                }
+            }],
+            attributes: { exclude: ['userId'] }, 
+            order: ['id'], 
+            offset, 
+            limit: Number(limit)
+        });
 
         if (rows.length > 0) {
             const totalPages = Math.ceil(count / Number(limit));

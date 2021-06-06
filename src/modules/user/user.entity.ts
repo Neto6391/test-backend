@@ -37,9 +37,6 @@ export class User extends Model {
     })
     isAdmin: boolean;
 
-    @HasOne(() => Person)
-    person: Person
-
-    @HasMany(() => Address)
-    address: Address
+    @HasOne(() => Person, { sourceKey: 'id', foreignKey: 'userId' })
+    person: User
 }

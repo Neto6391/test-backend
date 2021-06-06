@@ -58,8 +58,8 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch(':id/change-password')
-    async changePassword(@Param('id') idParam: number,  @Body() password: ChangePasswordDto, @Request() req) {
+    @Patch('change-password')
+    async changePassword(@Body() password: ChangePasswordDto, @Request() req) {
         const { id: userIdAuth } = req.user;
         
         const verifyLengthOfBody: Number = Object.keys(password).length; 
@@ -68,10 +68,8 @@ export class UserController {
             throw new BadRequestException('Bad Params in Body of Request');
         }
 
-        const numberOfAffectedRows = await this.userService.changePassword(password, idParam, userIdAuth as number);
-        if (numberOfAffectedRows === null) {
-            throw new UnauthorizedException('You are not authorized to perfom the operation');
-        } else if (numberOfAffectedRows === 0) {
+        const numberOfAffectedRows = await this.userService.changePassword(password, userIdAuth as number);
+        if (numberOfAffectedRows === 0) {
             throw new NotFoundException('This User doesn\'t exist');
         }
         return { message: "Successfully updated" };
@@ -82,7 +80,6 @@ export class UserController {
     async softDelete(@Param('id') idParam: number, @Request() req) {
         const { id: userIdAuth, isAdmin: isUserAdminAuth } = req.user
         const deleted = await this.userService.softDelete(idParam, userIdAuth, isUserAdminAuth);
-
         if (deleted === null) {
             throw new UnauthorizedException('You are not authorized to perfom the operation');
         } else if(deleted === 0) {

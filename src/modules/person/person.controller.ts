@@ -111,9 +111,9 @@ export class PersonController {
             state = req.query.state;
         }
 
-        const { id: userId } = req.user;
+        const { id: personId } = req.user.person;
 
-        return await this.personService.readByLocation(page, limit, city, state, userId);
+        return await this.personService.readByLocation(page, limit, city, state, personId);
     }
 
 }
