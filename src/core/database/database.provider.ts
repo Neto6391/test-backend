@@ -8,18 +8,20 @@ import { databaseConfig } from './database.config';
 export const databaseProviders = [{
     provide: SEQUELIZE,
     useFactory: async () => {
-        let config;
+        let config = {};
         switch(process.env.NODE_ENV) {
             case DEVELOPMENT:
-                config = databaseConfig.development;
+                Object.assign(config, databaseConfig.development);
                 break;
             case TEST:
-                config = databaseConfig.test;
+                Object.assign(config, databaseConfig.test);
                 break;
             case PRODUCTION:
-                config = databaseConfig.production;
+                Object.assign(config, databaseConfig.production);
+                break;
             default:
-                config = databaseConfig.development;
+                Object.assign(config, databaseConfig.development);
+                break;
         }
         const sequelize = new Sequelize(config);
         sequelize.addModels([User, Person, Address]);
