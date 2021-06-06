@@ -1,4 +1,5 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasOne, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, HasOne, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { Address } from "../address/address.entity";
 import { User } from "../user/user.entity";
 
 @Table
@@ -31,10 +32,9 @@ export class Person extends Model {
     })
     birthday: Date;
 
-    @ForeignKey(() => User)
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    userId: number;
+    @BelongsTo(()=> User, { foreignKey: 'userId' })
+    user: User
+
+    @HasMany(() => Address, { sourceKey: 'id', foreignKey: 'personId' })
+    personAddresses: Address
 }
