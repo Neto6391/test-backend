@@ -14,7 +14,7 @@ This repository was made as the solution to NestJS backend test.
 
 -Rename the .env.sample file to .env and execute one of the scripts bellow to run the app;
 
-# install package for project
+# install package for the project
 $ yarn install
 ```
 
