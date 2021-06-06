@@ -1,17 +1,18 @@
 ## Description
 
-This repository is only responsible to prove a some result in a test, but have another purpose for studying and you can possible need for studying some technings have improve and workes in some test executed in insomnia, please enjoy! :D
+This repository was made as the solution to NestJS backend test.
+
 ## Installation
 
 ```bash
-# Before run the app read this bellow...
--Before a run the app necessarily have a configuration in the file called 'sample.env'
+# Starting steps
+-Configure 'sample.env'
 
--Create 3 databases for each development stage(development, production, test) renomate each name for you choice and set the names in file 'sample.env';
+-Create 3 databases development, production and test, rename  the database on .env.sample accordingly to your database choice;
 
--SetUp the dev mode for you choice in property `NODE_ENV` in file `.env`;
+-Set the preferred mode in the property NODE_ENV in file .env.sample;
 
--finally after configurated the file `sample.env`, renomate to `.env` only and execute bellow the scripts to run the app;
+-Rename the .env.sample file to .env and execute one of the scripts bellow to run the app;
 
 # install package for project
 $ yarn install
@@ -109,7 +110,7 @@ api/v1/user/authenticate
 # Verb GET
 /api/v1/person/read-by-location
 
-# Query Params Note(Please choice between property `city`/`state` or twice) ...
+# Query Params Note(Please choose between property `city`/`state` or both) ...
 {
  	"page": 1,
  	"city": "test",
