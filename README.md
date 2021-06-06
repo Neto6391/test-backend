@@ -1,40 +1,197 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
+This repository is only responsible to prove a some result in a test, but have another purpose for studying and you can possible need for studying some technings have improve and workes in some test executed in insomnia, please enjoy! :D
 ## Installation
 
 ```bash
-$ npm install
+# Before run the app read this bellow...
+-Before a run the app necessarily have a configuration in the file called 'sample.env'
+
+-Create 3 databases for each development stage(development, production, test) renomate each name for you choice and set the names in file 'sample.env';
+
+-SetUp the dev mode for you choice in property `NODE_ENV` in file `.env`;
+
+-finally after configurated the file `sample.env`, renomate to `.env` only and execute bellow the scripts to run the app;
+
+# install package for project
+$ yarn install
+```
+
+## Routes for execution
+```bash
+# Default Route:
+http://localhost:5000
+
+ -User
+
+#PUBLIC ROUTE
+
+# Verb POST
+api/v1/user/authenticate
+
+# Body
+```json
+{
+	"email": "test@email.com",
+	"password": "1234567"
+}
+```
+# ----------------
+# PRIVATE ROUTES NECESSARILY TOKEN JWT IN AUTHORIZATION HEADERS
+
+# Verb POST
+/api/v1/user/create
+
+# Body
+```json
+{
+	"email": "teste1@email.com",
+	"password": "1234567",
+  "isAdmin": false
+}
+
+```
+
+# Verb PATCH
+/api/v1/user/change-password
+
+# Body
+```json
+{
+	"password": "12345678"
+}
+```
+
+# Verb GET
+/api/v1/user/read
+
+# Query Params ...
+```json
+{
+  "page": 1,
+  "email": "test@email.com",
+  "limit": 10
+}
+```
+
+# Verb DELETE
+/api/v1/user/${id}
+
+# ----------------
+
+-Person
+
+# ----------------
+# PRIVATE ROUTES NECESSARILY TOKEN JWT IN AUTHORIZATION HEADERS
+
+# Verb POST
+/api/v1/person/create
+
+# Body (Note: Gender have only types `M`/`F`)
+```json
+{
+	"name": "person1",
+	"gender": "M",
+	"birthday": "Thu Jun 03 2021 17:12:57 GMT-0300 ()"
+}
+```
+
+# Verb PUT
+/api/v1/person/update
+
+# Body (Note: Gender have only types `M`/`F`)
+```json
+{
+	"name": "person1",
+	"gender": "M",
+	"birthday": "Thu Jun 03 2021 17:12:57 GMT-0300 ()"
+}
+```
+
+# Verb GET
+/api/v1/person/read
+
+# Query Params ...
+```json
+{
+  "page": 1,
+  "name": "test",
+  "limit": 10
+}
+```
+
+# Verb GET
+/api/v1/person/read-by-location
+
+# Query Params Note(Please choice between property `city`/`state` or twice) ...
+```json
+{
+  "page": 1,
+  "city": "test",
+  "state": "test",
+  "limit": 10
+}
+```
+# ----------------
+
+-Address
+
+# ----------------
+# PRIVATE ROUTES NECESSARILY TOKEN JWT IN AUTHORIZATION HEADERS
+
+# Verb POST
+/api/v1/address/create
+
+# Body
+
+```json
+{
+	"address": "address one ...",
+	"city": "city ...",
+	"state": "state ...",
+	"postalCode": "postalcode ...",
+	"country": "country ..."
+}
+```
+
+# Verb PUT
+/api/v1/address/${id}/update
+
+# Body
+
+```json
+{
+	"address": "address one ...",
+	"city": "city ...",
+	"state": "state ...",
+	"postalCode": "postalcode ...",
+	"country": "country ..."
+}
+```
+
+# Verb GET
+/api/v1/address/read
+
+# Query Params
+```json
+{
+  "page": 1,
+  "address": "test",
+  "limit": 10
+}
+```
+
+# Verb DELETE
+/api/v1/address/${id}
+# ----------------
+
+
 ```
 
 ## Running the app
-
 ```bash
+
+
 # development
 $ npm run start
 
@@ -44,30 +201,3 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
