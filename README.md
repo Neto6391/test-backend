@@ -30,12 +30,11 @@ http://localhost:5000
 api/v1/user/authenticate
 
 # Body
-```json
 {
 	"email": "test@email.com",
 	"password": "1234567"
 }
-```
+
 # ----------------
 # PRIVATE ROUTES NECESSARILY TOKEN JWT IN AUTHORIZATION HEADERS
 
@@ -43,36 +42,29 @@ api/v1/user/authenticate
 /api/v1/user/create
 
 # Body
-```json
 {
 	"email": "teste1@email.com",
 	"password": "1234567",
-  "isAdmin": false
+	"isAdmin": false
 }
-
-```
 
 # Verb PATCH
 /api/v1/user/change-password
 
 # Body
-```json
 {
 	"password": "12345678"
 }
-```
 
 # Verb GET
 /api/v1/user/read
 
 # Query Params ...
-```json
 {
-  "page": 1,
-  "email": "test@email.com",
-  "limit": 10
+ 	"page": 1,
+ 	"email": "test@email.com",
+ 	"limit": 10
 }
-```
 
 # Verb DELETE
 /api/v1/user/${id}
@@ -88,50 +80,43 @@ api/v1/user/authenticate
 /api/v1/person/create
 
 # Body (Note: Gender have only types `M`/`F`)
-```json
 {
 	"name": "person1",
 	"gender": "M",
 	"birthday": "Thu Jun 03 2021 17:12:57 GMT-0300 ()"
 }
-```
 
 # Verb PUT
 /api/v1/person/update
 
 # Body (Note: Gender have only types `M`/`F`)
-```json
 {
 	"name": "person1",
 	"gender": "M",
 	"birthday": "Thu Jun 03 2021 17:12:57 GMT-0300 ()"
 }
-```
 
 # Verb GET
 /api/v1/person/read
 
 # Query Params ...
-```json
 {
-  "page": 1,
-  "name": "test",
-  "limit": 10
+ 	"page": 1,
+ 	"name": "test",
+ 	"limit": 10
 }
-```
 
 # Verb GET
 /api/v1/person/read-by-location
 
 # Query Params Note(Please choice between property `city`/`state` or twice) ...
-```json
 {
-  "page": 1,
-  "city": "test",
-  "state": "test",
-  "limit": 10
+ 	"page": 1,
+ 	"city": "test",
+ 	"state": "test",
+ 	"limit": 10
 }
-```
+
 # ----------------
 
 -Address
@@ -144,7 +129,6 @@ api/v1/user/authenticate
 
 # Body
 
-```json
 {
 	"address": "address one ...",
 	"city": "city ...",
@@ -152,14 +136,12 @@ api/v1/user/authenticate
 	"postalCode": "postalcode ...",
 	"country": "country ..."
 }
-```
 
 # Verb PUT
 /api/v1/address/${id}/update
 
 # Body
 
-```json
 {
 	"address": "address one ...",
 	"city": "city ...",
@@ -167,19 +149,16 @@ api/v1/user/authenticate
 	"postalCode": "postalcode ...",
 	"country": "country ..."
 }
-```
 
 # Verb GET
 /api/v1/address/read
 
 # Query Params
-```json
 {
-  "page": 1,
-  "address": "test",
-  "limit": 10
+ 	"page": 1,
+ 	"address": "test",
+	"limit": 10
 }
-```
 
 # Verb DELETE
 /api/v1/address/${id}
