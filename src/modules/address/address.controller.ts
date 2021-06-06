@@ -1,6 +1,6 @@
-import { Body, Controller, Post, UseGuards, Request, Get, BadRequestException, Put, NotFoundException, Param, Delete, UnauthorizedException } from '@nestjs/common';
-import { read } from 'fs';
+import { Body, Controller, Post, UseGuards, Request, Get, BadRequestException, Put, NotFoundException, Param, Delete } from '@nestjs/common';
 import { DoesAddressExist } from 'src/core/guards/does-address-exists.guard';
+import { DoesPersonFound } from 'src/core/guards/does-person-found.guard';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { AddressService } from './address.service';
 import { AddressDto } from './dto/address.dto';
@@ -12,11 +12,11 @@ export class AddressController {
         private readonly addressService: AddressService
     ) {}
 
-    @UseGuards(JwtAuthGuard, DoesAddressExist)
+    @UseGuards(JwtAuthGuard, DoesPersonFound, DoesAddressExist)
     @Post('create')
     async create(@Body() body: AddressDto, @Request() req) {
-        const { id: userId } = req.user;
-        const address = await this.addressService.create(body, userId);
+        const { id: personId } = req.user.person;
+        const address = await this.addressService.create(body, personId);
         
         return {
             address,
@@ -24,7 +24,7 @@ export class AddressController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, DoesPersonFound)
     @Get('read')
     async read(@Request() req) {
         let page;
@@ -56,15 +56,17 @@ export class AddressController {
             address = req.query.address;
         }
 
-        return await this.addressService.read(page, limit, address);
+        const { id: personId } = req.user.person;
+
+        return await this.addressService.read(personId, page, limit, address);
     }
 
 
-    @UseGuards(JwtAuthGuard, DoesAddressExist)
+    @UseGuards(JwtAuthGuard, DoesPersonFound, DoesAddressExist)
     @Put(':id/update')
     async update(@Param('id') idParam:Number,  @Body() body: AddressDto, @Request() req) {
-        const { id: userId } = req.user;
-        const numberOfAffectedRows = await this.addressService.update(body, idParam, userId);
+        const { id: personId } = req.user.person;
+        const numberOfAffectedRows = await this.addressService.update(body, idParam, personId);
 
         if (numberOfAffectedRows === 0) {
             throw new NotFoundException('This Address doesn\'t exist');
@@ -74,11 +76,11 @@ export class AddressController {
     }
 
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, DoesPersonFound)
     @Delete(':id')
     async delete(@Param('id') idParam:Number,  @Request() req) {
-        const { id: userId } = req.user
-        const deleted = await this.addressService.delete(idParam, userId);
+        const { id: personId } = req.user.person;
+        const deleted = await this.addressService.delete(idParam, personId);
 
         if(deleted === 0) {
             throw new NotFoundException('This address doesn\'t exist');

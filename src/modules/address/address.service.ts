@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import sequelize from 'sequelize';
 import { ADDRESS_REPOSITORY } from 'src/core/constants';
+import { Person } from '../person/person.entity';
 import { Address } from './address.entity';
 
 @Injectable()
@@ -9,16 +10,15 @@ export class AddressService {
         @Inject(ADDRESS_REPOSITORY) private readonly addressRepository: typeof Address
     ) {}
 
-    async create(body, userId): Promise<Address> {
-        return await this.addressRepository.create({...body, userId})
+    async create(body, personId): Promise<Address> {
+        return await this.addressRepository.create({...body, personId})
     }
 
-    async read(page?: number, limit?: Number, address?: string) {
-        limit = limit || 2;
+    async read(personId: number, page?: number, limit?: number, address?: string) {
+        limit = limit || 10;
         page = page || 1;
 
-        const filter = {};
-        console.log(filter)
+        const filter = { personId };
         const offset = Number(limit) * (Number(page) - 1);
 
         if (address) {
@@ -42,8 +42,8 @@ export class AddressService {
 
     }
 
-    async update(body, idParam,userId) {
-        const [numberOfAffectedRows] = await this.addressRepository.update({...body, userId}, { where: { id: idParam, userId }, returning: true });
+    async update(body, idParam,personId) {
+        const [numberOfAffectedRows] = await this.addressRepository.update({...body, personId}, { where: { id: idParam, personId }, returning: true });
             return numberOfAffectedRows;
     }
 
@@ -51,12 +51,12 @@ export class AddressService {
         return await this.addressRepository.findOne({ where: { address } });
     }
 
-    async delete(idParam, userId) {
-        return await this.addressRepository.destroy({ where: { id: idParam, userId } });
+    async delete(idParam, personId) {
+        return await this.addressRepository.destroy({ where: { id: idParam, personId } });
     }
 
-    async readByLocation(page, limit, city, state, userId) {
-        limit = limit || 2;
+    async readByLocation(page, limit, city, state, personId) {
+        limit = limit || 10;
         page = page || 1;
 
         const filter = {};
@@ -65,23 +65,34 @@ export class AddressService {
         if (city && !state) {
             Object.assign(filter, { 
                 city: {[sequelize.Op.like]:'%' + city + '%' },
-                userId
+                personId
             });
         } else if(state && !city) {
             Object.assign(filter, { 
                 state: {[sequelize.Op.like]:'%' + state + '%' },
-                userId 
+                personId 
             });
         } else if(state && city) {
             Object.assign(filter, { 
                 state: {[sequelize.Op.like]:'%' + state + '%' },
                 city:  {[sequelize.Op.like]:'%' + city + '%' },
-                userId
+                personId
             });
         }
 
-
-        const {rows, count} = await this.addressRepository.findAndCountAll({ where: filter, attributes: { exclude: ['updatedAt', 'createdAt'] }, order: ['id'], offset, limit: Number(limit)});
+        const {rows, count} = await this.addressRepository.findAndCountAll({ 
+            where: filter, 
+            include: [{
+                model: Person,
+                attributes: { exclude: ['createdAt', 'createdAt', 'updatedAt', 'userId', 'id'] }
+            }],
+            attributes: { 
+                exclude: ['updatedAt', 'createdAt', 'personId'] 
+            }, 
+            order: ['id'], 
+            offset, 
+            limit: Number(limit)
+        });
 
         if (rows.length > 0) {
             const totalPages = Math.ceil(count / Number(limit));
@@ -92,7 +103,7 @@ export class AddressService {
                 totalPages
             };
         } else {
-            return { message: "There are not address available from this user!" }
+            return { message: "There are not address available from the user on this location!" }
         }
     }
 
